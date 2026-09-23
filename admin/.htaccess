@@ -1,0 +1,12 @@
+Options -Indexes
+RewriteEngine On
+
+# ── Clean URLs — remove .php from admin pages ─────────────
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !\.[a-zA-Z0-9]+$
+RewriteRule ^(.+)$ $1.php [L]
+
+# ── Redirect .php URLs to clean URLs (301) ────────────────
+RewriteCond %{THE_REQUEST} \s/+pro/admin/([^.]+)\.php[\s?] [NC]
+RewriteRule ^ /pro/admin/%1 [R=301,L]

@@ -1,0 +1,100 @@
+/* ── Testimonials — dual-row marquee ──────────────────────── */
+.testimonials-section {
+  background: var(--paper);
+  overflow: hidden;
+}
+[data-theme="dark"] .testimonials-section { background: #111113; }
+
+.testimonials-marquee-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  overflow: hidden;
+  mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+}
+
+.tcard-row { display: flex; overflow: hidden; }
+
+.tcard-track {
+  display: flex;
+  gap: 1rem;
+  width: max-content;
+  will-change: transform;
+}
+
+/* Row 1 → left to right, Row 2 → right to left */
+.tcard-row:nth-child(1) .tcard-track { animation: tscroll-fwd 30s linear infinite; }
+.tcard-row:nth-child(2) .tcard-track { animation: tscroll-rev 30s linear infinite; }
+
+.testimonials-marquee-wrap:hover .tcard-track { animation-play-state: paused; }
+
+@keyframes tscroll-fwd {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+@keyframes tscroll-rev {
+  from { transform: translateX(-50%); }
+  to   { transform: translateX(0); }
+}
+
+/* Card */
+.tcard {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+  background: var(--white);
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  padding: 1rem 1.3rem;
+  width: 340px;
+  flex-shrink: 0;
+  cursor: default;
+  transition: transform 0.35s cubic-bezier(0.22,1,0.36,1), box-shadow 0.35s ease;
+}
+.tcard:hover {
+  transform: translateY(-7px) scale(1.03);
+  box-shadow: 0 18px 48px rgba(0,0,0,0.13);
+  z-index: 2;
+  position: relative;
+}
+[data-theme="dark"] .tcard { background: #1c1c1e; border-color: rgba(238,235,229,0.07); }
+[data-theme="dark"] .tcard:hover { box-shadow: 0 18px 48px rgba(0,0,0,0.55); }
+
+/* Avatar */
+.tcard-avatar {
+  width: 52px; height: 52px;
+  border-radius: 50%; object-fit: cover;
+  flex-shrink: 0; border: 2px solid var(--rule);
+}
+.tcard-avatar--initials {
+  width: 52px; height: 52px; border-radius: 50%;
+  background: var(--ink); color: var(--white);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-serif); font-size: 1.3rem; font-weight: 300;
+  flex-shrink: 0; border: 2px solid var(--rule);
+}
+
+/* Content */
+.tcard-body { display: flex; flex-direction: column; gap: 0.3rem; flex: 1; min-width: 0; }
+.tcard-quote { font-family: var(--font-serif); font-size: 1.5rem; line-height: 0.5; color: var(--muted-lt); font-weight: 300; user-select: none; }
+.tcard-text {
+  font-size: 0.78rem; color: var(--ink-soft); line-height: 1.6; font-style: italic;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+[data-theme="dark"] .tcard-text { color: rgba(238,235,229,0.65); }
+.tcard-author-info { display: flex; flex-direction: column; gap: 0.1rem; padding-top: 0.45rem; border-top: 1px solid var(--rule); margin-top: auto; }
+.tcard-name { font-size: 0.76rem; font-weight: 600; color: var(--ink); letter-spacing: 0.01em; }
+.tcard-title { font-size: 0.58rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+
+/* ── Clients fallback marquee ─────────────────────────────── */
+.clients-section { background: var(--paper-warm); }
+.clients-marquee-wrap { overflow: hidden; mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent); -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent); }
+.clients-marquee { display: flex; gap: 0; animation: marquee 30s linear infinite; width: max-content; }
+.clients-marquee:hover { animation-play-state: paused; }
+.client-entry { display: flex; align-items: center; padding: 0 3rem; border-right: 1px solid var(--rule); white-space: nowrap; min-width: max-content; }
+.client-logo-img { height: 36px; width: auto; object-fit: contain; filter: grayscale(100%) opacity(0.55); transition: filter 0.3s; }
+.client-logo-img:hover { filter: grayscale(0%) opacity(1); }
+.client-name-text { font-size: 0.8rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); font-weight: 500; transition: color 0.3s; }
+.client-entry:hover .client-name-text { color: var(--ink); }
+@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }

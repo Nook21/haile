@@ -1,0 +1,84 @@
+Options -Indexes
+RewriteEngine On
+
+# ── Gzip compression ─────────────────────────────────────
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css text/javascript application/javascript application/json image/svg+xml
+</IfModule>
+
+# ── Browser caching ──────────────────────────────────────
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/jpeg        "access plus 1 year"
+    ExpiresByType image/png         "access plus 1 year"
+    ExpiresByType image/webp        "access plus 1 year"
+    ExpiresByType image/svg+xml     "access plus 1 year"
+    ExpiresByType image/x-icon      "access plus 1 year"
+    ExpiresByType video/mp4         "access plus 1 month"
+    ExpiresByType text/css          "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType font/woff2        "access plus 1 year"
+</IfModule>
+
+# ── PHP upload limits for large videos ──────────────────────
+<IfModule mod_php.c>
+    php_value upload_max_filesize 2048M
+    php_value post_max_size       2100M
+    php_value max_execution_time  300
+    php_value max_input_time      300
+    php_value memory_limit        256M
+</IfModule>
+<IfModule mod_php8.c>
+    php_value upload_max_filesize 2048M
+    php_value post_max_size       2100M
+    php_value max_execution_time  300
+    php_value max_input_time      300
+    php_value memory_limit        256M
+</IfModule>
+
+# ── Block sensitive files ─────────────────────────────────
+<Files ".env">
+    Order Deny,Allow
+    Deny from all
+</Files>
+<Files "config.php">
+    Order Deny,Allow
+    Deny from all
+</Files>
+<Files "setup.lock">
+    Order Deny,Allow
+    Deny from all
+</Files>
+<FilesMatch "^\\.">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>
+
+# ── Security headers ──────────────────────────────────────
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# ── Clean URLs — remove .php from public pages ────────────
+# /properties/slug → property.php?slug=slug
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^haile/properties/([^/]+)/?$ /haile/property.php?slug=$1 [L,QSA]
+
+# Skip real files, directories, and admin/assets/uploads
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !^/haile/admin/
+RewriteCond %{REQUEST_URI} !^/haile/assets/
+RewriteCond %{REQUEST_URI} !^/haile/uploads/
+
+# If the request has no extension, try adding .php
+RewriteCond %{REQUEST_URI} !\.[a-zA-Z0-9]+$
+RewriteRule ^(.+)$ $1.php [L]
+
+# ── Redirect .php URLs to clean URLs (301) ────────────────
+RewriteCond %{THE_REQUEST} \s/+haile/([^.]+)\.php[\s?] [NC]
+RewriteRule ^ /haile/%1 [R=301,L]

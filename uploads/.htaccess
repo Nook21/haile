@@ -1,0 +1,16 @@
+# Prevent execution of PHP/scripts in uploads directory
+php_flag engine off
+Options -ExecCGI
+AddHandler cgi-script .php .php3 .php4 .php5 .phtml .pl .py .jsp .asp .htm .shtml .sh .cgi
+
+# Deny direct access to sensitive file types
+<FilesMatch "\.(php|php3|php4|php5|phtml|pl|py|cgi|sh|bat|exe|dll|so)$">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>
+
+# Allow image and video files
+<FilesMatch "\.(jpg|jpeg|png|gif|webp|avif|svg|mp4|webm|ogg|pdf)$">
+    Order Allow,Deny
+    Allow from all
+</FilesMatch>
