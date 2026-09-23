@@ -83,6 +83,7 @@ include __DIR__ . '/includes/header.php';
 <?= renderFlash() ?>
 
 <div class="page-header">
+    
     <h2>Properties</h2>
     <a href="<?= BASE_URL ?>/admin/project-create.php" class="btn-admin-primary"><i class="bi bi-plus-lg"></i> Add Property</a>
 </div>
