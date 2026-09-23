@@ -1825,3 +1825,27 @@ img { content-visibility:auto; }
   .contact-mobile-phone:hover { border-color:var(--gold); color:var(--gold); }
   [data-theme="dark"] .contact-mobile-phone { color:#ede9e0; }
 }
+
+/* ── Footer Powered By ── */
+.footer-powered {
+  text-align: center;
+  padding: 14px 0 18px;
+  font-size: .72rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  border-top: 1px solid var(--ink-3);
+  margin-top: 8px;
+  opacity: .7;
+}
+.footer-powered-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--gold);
+  text-decoration: none;
+  font-weight: 600;
+  transition: opacity .2s;
+}
+.footer-powered-link i { font-size: .85rem; }
+.footer-powered-link:hover { opacity: .75; }

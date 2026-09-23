@@ -33,6 +33,7 @@
             </div>
             <span class="footer-made">Made with <span class="footer-heart">♥</span></span>
         </div>
+        <div class="footer-powered">Powered by <a href="mailto:sayhi@akiyacrm.com" class="footer-powered-link"><i class="bi bi-stars"></i><span>labratsai</span></a></div>
     </div>
 </footer>
 

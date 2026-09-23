@@ -36,18 +36,18 @@ $currentPage = basename($_SERVER['PHP_SELF'], '.php');
         <li><a href="<?= BASE_URL ?>/admin/categories" class="<?= $currentPage === 'categories' ? 'active' : '' ?>">
             <i class="bi bi-tag"></i> Categories
         </a></li>
-        <li><a href="<?= BASE_URL ?>/admin/clients" class="<?= $currentPage === 'clients' ? 'active' : '' ?>">
+        <?php /* <li><a href="<?= BASE_URL ?>/admin/clients" class="<?= $currentPage === 'clients' ? 'active' : '' ?>">
             <i class="bi bi-people"></i> Clients
-        </a></li>
+        </a></li> */ ?>
         <li><a href="<?= BASE_URL ?>/admin/insights" class="<?= $currentPage === 'insights' ? 'active' : '' ?>">
             <i class="bi bi-newspaper"></i> Insights
         </a></li>
         <li><a href="<?= BASE_URL ?>/admin/testimonials" class="<?= $currentPage === 'testimonials' ? 'active' : '' ?>">
             <i class="bi bi-chat-quote"></i> Testimonials
         </a></li>
-        <li><a href="<?= BASE_URL ?>/admin/sponsors" class="<?= $currentPage === 'sponsors' ? 'active' : '' ?>">
+        <?php /* <li><a href="<?= BASE_URL ?>/admin/sponsors" class="<?= $currentPage === 'sponsors' ? 'active' : '' ?>">
             <i class="bi bi-award"></i> Sponsors
-        </a></li>
+        </a></li> */ ?>
         <li><a href="<?= BASE_URL ?>/admin/media" class="<?= $currentPage === 'media' ? 'active' : '' ?>">
             <i class="bi bi-images"></i> Media Library
         </a></li>
