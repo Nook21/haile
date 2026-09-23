@@ -135,6 +135,7 @@ $timeout = isset($_GET['timeout']);
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Admin — Haile Real Estate Advisor</title>
+<link rel="preload" as="image" href="../insight-3.jpg" fetchpriority="high">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -147,7 +148,7 @@ body {
   font-family: 'Segoe UI', system-ui, sans-serif;
   overflow: hidden;
   position: relative;
-  background: #080808;
+  background: #080808 url('../insight-3.jpg') center / cover no-repeat;
 }
 
 /* ── Background image ── */
