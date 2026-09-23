@@ -1,0 +1,5 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/akiyacsx/hailerealestateadvisor.com/
+    - /bin/rsync -av --exclude='.env' --exclude='.git/' ./ $DEPLOYPATH/
