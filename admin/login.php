@@ -135,6 +135,9 @@ $timeout = isset($_GET['timeout']);
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Admin — Haile Real Estate Advisor</title>
+<?php $favicon = getSetting('favicon'); if ($favicon): ?>
+<link rel="icon" href="<?= e(assetUrl($favicon)) ?>">
+<?php endif; ?>
 <link rel="preload" as="image" href="../insight-3.jpg" fetchpriority="high">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <style>

@@ -11,8 +11,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_general'])) {
     }
     // Favicon
     if (!empty($_FILES['favicon']['name'])) {
-        $result = saveUpload($_FILES['favicon'], 'profile');
-        if ($result) db()->prepare("INSERT INTO settings (setting_key, setting_value) VALUES ('favicon',?) ON DUPLICATE KEY UPDATE setting_value=?")->execute([$result['path'], $result['path']]);
+        $favExt = strtolower(pathinfo($_FILES['favicon']['name'], PATHINFO_EXTENSION));
+        if ($favExt === 'ico') {
+            $dir = UPLOAD_PATH . 'profile/';
+            if (!is_dir($dir)) mkdir($dir, 0755, true);
+            $filename = uniqid('favicon_', true) . '.ico';
+            if (move_uploaded_file($_FILES['favicon']['tmp_name'], $dir . $filename)) {
+                $path = 'uploads/profile/' . $filename;
+                db()->prepare("INSERT INTO settings (setting_key, setting_value) VALUES ('favicon',?) ON DUPLICATE KEY UPDATE setting_value=?")->execute([$path, $path]);
+                copy(__DIR__ . '/../' . $path, $_SERVER['DOCUMENT_ROOT'] . '/favicon.ico');
+            }
+        } else {
+            $result = saveUpload($_FILES['favicon'], 'profile');
+            if ($result) {
+                db()->prepare("INSERT INTO settings (setting_key, setting_value) VALUES ('favicon',?) ON DUPLICATE KEY UPDATE setting_value=?")->execute([$result['path'], $result['path']]);
+                copy(__DIR__ . '/../' . $result['path'], $_SERVER['DOCUMENT_ROOT'] . '/favicon.ico');
+            }
+        }
     }
     // Site logo
     if (!empty($_POST['site_logo_cropped'])) {
@@ -179,8 +194,8 @@ include __DIR__ . '/includes/header.php';
                 <?php if (!empty($s['favicon'])): ?>
                 <img src="<?= e(assetUrl($s['favicon'])) ?>" style="width:48px;height:48px;object-fit:contain;margin-bottom:0.75rem;display:block" alt="">
                 <?php endif; ?>
-                <input type="file" name="favicon" class="form-control" accept=".jpg,.jpeg,.png,.webp">
-                <div class="form-text mt-1">PNG recommended</div>
+                <input type="file" name="favicon" class="form-control" accept=".jpg,.jpeg,.png,.webp,.ico">
+                <div class="form-text mt-1">PNG or ICO recommended. 32×32 or 64×64px.</div>
                 <div class="mt-3 mb-1"><button type="submit" name="save_general" class="btn-admin-primary"><i class="bi bi-check-lg"></i> Save Favicon</button></div>
             </div>
         </form>

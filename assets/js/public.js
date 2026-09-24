@@ -383,7 +383,7 @@
       { sel: '.contact-cta-bg-img',speed: 0.3  },
       { sel: '.insight-hero-bg img', speed: 0.3 },
       { sel: '.property-hero-bg img', speed: 0.3 },
-      { sel: '.about-img-wrap img', speed: 0.12 },
+
       { sel: '.cat-tile-bg',        speed: 0.1  },
     ];
 

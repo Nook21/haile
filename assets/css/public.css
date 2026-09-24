@@ -184,13 +184,14 @@ ul, ol { list-style:none; }
 .nav-book-btn:hover { background:var(--gold); color:#0d0d0a; border-color:var(--gold); }
 .nav-mobile-controls { display:none; align-items:center; gap:0.75rem; }
 .nav-burger {
-  display:none; flex-direction:column; justify-content:center; align-items:center; gap:6px;
+  display:none; flex-direction:column; justify-content:center; align-items:center; gap:5px;
   width:40px; height:40px; flex-shrink:0;
 }
-.nav-burger span { width:24px; height:1px; background:#ede9e0; transition:transform 0.35s var(--ease-expo); display:block; }
+.nav-burger span { width:24px; height:1.5px; background:#ede9e0; transition:transform 0.35s var(--ease-expo), opacity 0.25s; display:block; }
 [data-theme="light"] .site-nav.scrolled .nav-burger span { background:#ede9e0; }
-.nav-burger.open span:first-child { transform:translateY(7px) rotate(45deg); }
-.nav-burger.open span:last-child  { transform:translateY(-7px) rotate(-45deg); }
+.nav-burger.open span:first-child  { transform:translateY(6.5px) rotate(45deg); }
+.nav-burger.open span:nth-child(2) { opacity:0; transform:scaleX(0); }
+.nav-burger.open span:last-child   { transform:translateY(-6.5px) rotate(-45deg); }
 .nav-mobile-menu {
   position:fixed; inset:0; background:#0d0d0a; z-index:999;
   display:flex; align-items:center; justify-content:center;
@@ -456,8 +457,11 @@ ul, ol { list-style:none; }
 }
 @media (max-width:900px) {
   .about-grid { grid-template-columns:1fr; gap:3rem; }
-  .about-img-wrap { max-width:420px; }
+  .about-img-wrap { width:100%; max-width:420px; }
   .about-img-badge { right:1rem; }
+}
+@media (max-width:480px) {
+  .about-img-wrap { max-width:100%; aspect-ratio:4/5; }
 }
 
 /* ── Services Section ────────────────────────────────────── */
@@ -1495,7 +1499,7 @@ a.contact-detail-value:hover { color:var(--gold); }
 .cat-tile-bg { transform-origin:center center; }
 
 .about-img-wrap { overflow:hidden; }
-.about-img-wrap img { transform-origin:center top; }
+.about-img-wrap img { transform:none; will-change:auto; }
 
 /* -- Scroll animation initial states ----------------------- */
 .about-img-wrap  { opacity:0; transform:translateX(-40px); }

@@ -149,7 +149,7 @@ include __DIR__ . '/includes/header.php';
                     </div>
                     <div class="prop-card-body">
                         <div class="prop-card-header-row">
-                            <span class="prop-card-index"><?= str_pad($i+1,2,'0',STR_PAD_LEFT) ?> � <?= e($p['category_name'] ?? 'Property') ?></span>
+                            <span class="prop-card-index"><?= str_pad($i+1,2,'0',STR_PAD_LEFT) ?> &middot; <?= e($p['category_name'] ?? 'Property') ?></span>
                         </div>
                         <h3 class="prop-card-title"><?= e($p['title']) ?></h3>
                         <?php if (!empty($p['location'])): ?>
@@ -167,7 +167,7 @@ include __DIR__ . '/includes/header.php';
                                     <?php if (!empty($p['bedrooms'])): $specs[] = $p['bedrooms'].' Bedrooms'; endif; ?>
                                     <?php if (!empty($p['bathrooms'])): $specs[] = $p['bathrooms'].' Bath'; endif; ?>
                                     <?php if (!empty($p['area'])): $specs[] = $p['area']; endif; ?>
-                                    <?= e(implode(' � ', $specs)) ?>
+                                    <?= implode(' &middot; ', array_map('e', $specs)) ?>
                                 </span>
                             </div>
                             <?php endif; ?>

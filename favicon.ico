@@ -1,0 +1,22 @@
+<?php
+require_once __DIR__ . '/includes/config.php';
+require_once __DIR__ . '/includes/database.php';
+$st = db()->query("SELECT setting_value FROM settings WHERE setting_key = 'favicon'");
+$row = $st->fetch();
+if ($row && $row['setting_value']) {
+    $path = __DIR__ . '/' . ltrim($row['setting_value'], '/');
+    if (file_exists($path)) {
+        $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+        $mime = match($ext) {
+            'ico'  => 'image/x-icon',
+            'png'  => 'image/png',
+            'webp' => 'image/webp',
+            default => 'image/jpeg',
+        };
+        header('Content-Type: ' . $mime);
+        header('Cache-Control: public, max-age=86400');
+        readfile($path);
+        exit;
+    }
+}
+http_response_code(404);

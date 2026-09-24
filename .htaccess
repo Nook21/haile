@@ -62,6 +62,11 @@ RewriteEngine On
     Header set Referrer-Policy "strict-origin-when-cross-origin"
 </IfModule>
 
+# ── Serve favicon.ico via PHP ───────────────────────────
+<Files "favicon.ico">
+    ForceType application/x-httpd-php
+</Files>
+
 # ── Clean URLs — remove .php from public pages ────────────
 # /properties/slug → property.php?slug=slug
 RewriteCond %{REQUEST_FILENAME} !-f

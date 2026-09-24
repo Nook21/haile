@@ -57,7 +57,7 @@ $currentPage = basename($_SERVER['PHP_SELF']);
                 <i class="bi bi-moon toggle-icon-dark"></i>
             </button>
             <button class="nav-burger" id="navBurger" aria-label="Menu" aria-expanded="false">
-                <span></span><span></span>
+                <span></span><span></span><span></span>
             </button>
         </div>
     </div>
