@@ -187,7 +187,7 @@
       const btn = contactForm.querySelector('[type="submit"]');
       const existingErr = contactForm.querySelector('.form-errors');
       if (existingErr) existingErr.remove();
-      if (btn) { btn.disabled = true; btn.querySelector('span').textContent = 'Sending…'; }
+      if (btn) { btn.disabled = true; const btnSpan = btn.querySelector('span'); if (btnSpan) btnSpan.textContent = 'Sending…'; }
       try {
         const res  = await fetch(contactForm.action, { method: 'POST', body: new FormData(contactForm) });
         const text = await res.text();
@@ -204,7 +204,7 @@
           contactForm.prepend(box);
         }
       } catch (_) { showToast('Something went wrong. Please try again.'); }
-      if (btn) { btn.disabled = false; btn.querySelector('span').textContent = 'Send Enquiry'; }
+      if (btn) { btn.disabled = false; const btnSpan2 = btn.querySelector('span'); if (btnSpan2) btnSpan2.textContent = 'Send Inquiry'; }
     });
   }
 

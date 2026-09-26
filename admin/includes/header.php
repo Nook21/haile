@@ -48,9 +48,9 @@ $currentPage = basename($_SERVER['PHP_SELF'], '.php');
         <li><a href="<?= BASE_URL ?>/admin/testimonials" class="<?= $currentPage === 'testimonials' ? 'active' : '' ?>">
             <i class="bi bi-chat-quote"></i> Testimonials
         </a></li>
-        <?php /* <li><a href="<?= BASE_URL ?>/admin/sponsors" class="<?= $currentPage === 'sponsors' ? 'active' : '' ?>">
+        <li><a href="<?= BASE_URL ?>/admin/sponsors" class="<?= $currentPage === 'sponsors' ? 'active' : '' ?>">
             <i class="bi bi-award"></i> Sponsors
-        </a></li> */ ?>
+        </a></li>
         <li><a href="<?= BASE_URL ?>/admin/media" class="<?= $currentPage === 'media' ? 'active' : '' ?>">
             <i class="bi bi-images"></i> Media Library
         </a></li>

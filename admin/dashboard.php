@@ -199,6 +199,7 @@ include __DIR__ . '/includes/header.php';
                 <a href="<?= BASE_URL ?>/admin/insights.php" class="btn-admin-secondary"><i class="bi bi-newspaper"></i> Manage Insights</a>
                 <a href="<?= BASE_URL ?>/admin/testimonials.php" class="btn-admin-secondary"><i class="bi bi-chat-quote"></i> Testimonials</a>
                 <a href="<?= BASE_URL ?>/admin/categories.php" class="btn-admin-secondary"><i class="bi bi-tag"></i> Manage Categories</a>
+                <a href="<?= BASE_URL ?>/admin/sponsors" class="btn-admin-secondary"><i class="bi bi-award"></i> Sponsors</a>
                 <a href="<?= BASE_URL ?>/admin/clients.php" class="btn-admin-secondary"><i class="bi bi-people"></i> Manage Clients</a>
                 <a href="<?= BASE_URL ?>/admin/media.php" class="btn-admin-secondary"><i class="bi bi-images"></i> Media Library</a>
                 <a href="<?= BASE_URL ?>/admin/settings.php" class="btn-admin-secondary"><i class="bi bi-gear"></i> Site Settings</a>

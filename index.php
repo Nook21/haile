@@ -1,4 +1,4 @@
-?<?php
+<?php
 require_once __DIR__ . '/includes/config.php';
 require_once __DIR__ . '/includes/functions.php';
 require_once __DIR__ . '/includes/mailer.php';
@@ -263,6 +263,28 @@ include __DIR__ . '/includes/header.php';
                 </div>
                 <a href="#contact" class="about-meet-link">Meet <?= e(explode(' ', $about['name'])[0]) ?> <i class="bi bi-arrow-right"></i></a>
             </div>
+        </div>
+    </div>
+</section>
+<?php endif; ?>
+
+<!-- SPONSORS -->
+<?php $sponsors = getActiveSponsors(); ?>
+<?php if ($sponsors): ?>
+<section class="sponsors-section">
+    <p class="sponsors-eyebrow">Proudly Supported By</p>
+    <div class="sponsors-marquee-wrap">
+        <div class="sponsors-marquee">
+            <?php $doubled = array_merge($sponsors, $sponsors); ?>
+            <?php foreach ($doubled as $sp): ?>
+            <div class="sponsor-entry">
+                <?php if ($sp['logo']): ?>
+                <img src="<?= e(assetUrl($sp['logo'])) ?>" alt="<?= e($sp['name']) ?>" class="sponsor-logo-img" loading="lazy">
+                <?php else: ?>
+                <span class="sponsor-name-text"><?= e($sp['name']) ?></span>
+                <?php endif; ?>
+            </div>
+            <?php endforeach; ?>
         </div>
     </div>
 </section>
@@ -601,7 +623,7 @@ include __DIR__ . '/includes/header.php';
                         <textarea id="f_message" name="message" class="contact-lv-input contact-lv-textarea" rows="4" required maxlength="5000"><?= e($contactData['message']) ?></textarea>
                     </div>
                 </div>
-                <button type="submit" class="contact-lv-submit">Send Inquiry</button>
+                <button type="submit" class="contact-lv-submit"><span>Send Inquiry</span></button>
             </form>
             <?php endif; ?>
         </div>

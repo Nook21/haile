@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/functions.php';
+header('Content-Type: text/html; charset=UTF-8');
 $siteTitle  = getSetting('site_title', 'Haile Estate');
 $siteLogo   = getSetting('site_logo');
 $favicon    = getSetting('favicon');
@@ -9,12 +10,15 @@ $currentPage = basename($_SERVER['PHP_SELF']);
 <html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8">
-<script>document.documentElement.setAttribute('data-theme',localStorage.getItem('theme')||'light');var _t=localStorage.getItem('theme')||'light';document.documentElement.style.background=_t==='light'?'#f8f6f1':'#0d0d0a';document.body&&(document.body.style.background=_t==='light'?'#f8f6f1':'#0d0d0a');</script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script>document.documentElement.setAttribute('data-theme',localStorage.getItem('theme')||'light');var _t=localStorage.getItem('theme')||'light';document.documentElement.style.background=_t==='light'?'#f8f6f1':'#0d0d0a';document.body&&(document.body.style.background=_t==='light'?'#f8f6f1':'#0d0d0a');</script>
 <meta name="description" content="<?= e(getSetting('site_description')) ?>">
 <title><?= isset($pageTitle) ? e($pageTitle) . ' — ' : '' ?><?= e($siteTitle) ?></title>
 <?php if ($favicon): ?>
 <link rel="icon" href="<?= e(assetUrl($favicon)) ?>">
+<link rel="shortcut icon" href="<?= e(assetUrl($favicon)) ?>">
+<?php else: ?>
+<link rel="icon" href="<?= BASE_URL ?>/favicon.ico">
 <?php endif; ?>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
