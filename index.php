@@ -191,6 +191,48 @@ include __DIR__ . '/includes/header.php';
     </div>
 </section>
 
+<!-- BRAND VIDEO -->
+<?php $brandVideoPath = getSetting('brand_video'); ?>
+<?php if ($brandVideoPath): ?>
+<section class="brand-video-section" id="brandVideo">
+    <div class="brand-video-inner">
+        <div class="brand-video-wrap" id="brandVideoWrap">
+            <video
+                id="brandVid"
+                class="brand-vid"
+                src="<?= e(assetUrl($brandVideoPath)) ?>"
+                loop
+                muted
+                playsinline
+                preload="none"
+                controlsList="nodownload nofullscreen"
+                disablePictureInPicture
+            ></video>
+            <div class="brand-vid-overlay" id="brandVidOverlay">
+                <div class="brand-vid-play-icon" id="brandVidPlayIcon">
+                    <i class="bi bi-play-fill"></i>
+                </div>
+                <p class="brand-vid-label">Move cursor to unmute</p>
+            </div>
+            <div class="brand-vid-controls">
+                <button class="brand-vid-btn" id="brandVidSoundBtn" aria-label="Toggle sound">
+                    <i class="bi bi-volume-mute-fill" id="brandVidSoundIco"></i>
+                </button>
+                <button class="brand-vid-btn" id="brandVidFsBtn" aria-label="Fullscreen">
+                    <i class="bi bi-fullscreen" id="brandVidFsIco"></i>
+                </button>
+            </div>
+            <div class="brand-vid-progress" id="brandVidProgress"><div class="brand-vid-bar" id="brandVidBar"></div></div>
+        </div>
+        <div class="brand-video-meta">
+            <p class="brand-video-eyebrow">Haile Estate</p>
+            <h2 class="brand-video-title">Experience the <em>difference.</em></h2>
+            <p class="brand-video-sub">A glimpse into the world of Haile Real Estate &mdash; where every property tells a story.</p>
+        </div>
+    </div>
+</section>
+<?php endif; ?>
+
 <!-- PROPERTY CATEGORIES -->
 <?php if ($categories): ?>
 <section class="section categories-section">
@@ -273,19 +315,16 @@ include __DIR__ . '/includes/header.php';
 <?php if ($sponsors): ?>
 <section class="sponsors-section">
     <p class="sponsors-eyebrow">Proudly Supported By</p>
-    <div class="sponsors-marquee-wrap">
-        <div class="sponsors-marquee">
-            <?php $doubled = array_merge($sponsors, $sponsors); ?>
-            <?php foreach ($doubled as $sp): ?>
-            <div class="sponsor-entry">
-                <?php if ($sp['logo']): ?>
-                <img src="<?= e(assetUrl($sp['logo'])) ?>" alt="<?= e($sp['name']) ?>" class="sponsor-logo-img" loading="lazy">
-                <?php else: ?>
-                <span class="sponsor-name-text"><?= e($sp['name']) ?></span>
-                <?php endif; ?>
-            </div>
-            <?php endforeach; ?>
+    <div class="sponsors-grid">
+        <?php foreach ($sponsors as $sp): ?>
+        <div class="sponsor-card">
+            <?php if ($sp['logo']): ?>
+            <img src="<?= e(assetUrl($sp['logo'])) ?>" alt="<?= e($sp['name']) ?>" class="sponsor-logo-img" loading="lazy">
+            <?php else: ?>
+            <span class="sponsor-name-text"><?= e($sp['name']) ?></span>
+            <?php endif; ?>
         </div>
+        <?php endforeach; ?>
     </div>
 </section>
 <?php endif; ?>

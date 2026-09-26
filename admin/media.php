@@ -2,6 +2,39 @@
 require_once __DIR__ . '/includes/auth.php';
 $pageTitle = 'Media Library';
 
+// Brand video upload/remove
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_brand_video'])) {
+    verifyCsrf();
+    if (!empty($_FILES['brand_video']['name'])) {
+        $ext  = strtolower(pathinfo($_FILES['brand_video']['name'], PATHINFO_EXTENSION));
+        $allowed = ['mp4','webm','mov'];
+        if (in_array($ext, $allowed) && $_FILES['brand_video']['error'] === UPLOAD_ERR_OK) {
+            $dir = __DIR__ . '/../uploads/brand/';
+            if (!is_dir($dir)) mkdir($dir, 0755, true);
+            // remove old
+            $old = getSetting('brand_video');
+            if ($old) { $abs = __DIR__ . '/../' . ltrim($old,'/'); if (file_exists($abs)) unlink($abs); }
+            $filename = 'brand_' . bin2hex(random_bytes(4)) . '.' . $ext;
+            move_uploaded_file($_FILES['brand_video']['tmp_name'], $dir . $filename);
+            $path = 'uploads/brand/' . $filename;
+            $st = db()->prepare('INSERT INTO settings (setting_key,setting_value) VALUES (?,?) ON DUPLICATE KEY UPDATE setting_value=?');
+            $st->execute(['brand_video', $path, $path]);
+            flash('success', 'Brand video updated.');
+        } else {
+            flash('error', 'Invalid file. Use MP4, WebM or MOV.');
+        }
+    }
+    header('Location: ' . BASE_URL . '/admin/media'); exit;
+}
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove_brand_video'])) {
+    verifyCsrf();
+    $old = getSetting('brand_video');
+    if ($old) { $abs = __DIR__ . '/../' . ltrim($old,'/'); if (file_exists($abs)) unlink($abs); }
+    db()->prepare('DELETE FROM settings WHERE setting_key = ?')->execute(['brand_video']);
+    flash('success', 'Brand video removed.');
+    header('Location: ' . BASE_URL . '/admin/media'); exit;
+}
+
 // Delete
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_media'])) {
     verifyCsrf();
@@ -47,6 +80,45 @@ include __DIR__ . '/includes/header.php';
 ?>
 
 <?= renderFlash() ?>
+
+<!-- Brand Video Card -->
+<?php $brandVideo = getSetting('brand_video'); ?>
+<div class="admin-card mb-4">
+    <div class="admin-card-header">
+        <span class="admin-card-title"><i class="bi bi-camera-video me-2"></i>Homepage Brand Video</span>
+        <?php if ($brandVideo): ?>
+        <a href="<?= e(assetUrl($brandVideo)) ?>" target="_blank" class="btn-admin-secondary" style="padding:0.35rem 0.85rem;font-size:0.8rem;"><i class="bi bi-eye"></i> Preview</a>
+        <?php endif; ?>
+    </div>
+    <?php if ($brandVideo): ?>
+    <div class="d-flex align-items-center gap-3 mb-3">
+        <video src="<?= e(assetUrl($brandVideo)) ?>" style="height:80px;border-radius:4px;background:#000" muted playsinline></video>
+        <div>
+            <div style="font-size:0.82rem;font-weight:500"><?= e(basename($brandVideo)) ?></div>
+            <div style="font-size:0.75rem;color:var(--text-muted)">Currently active on homepage</div>
+        </div>
+    </div>
+    <?php endif; ?>
+    <div class="d-flex gap-2 flex-wrap">
+        <form method="POST" enctype="multipart/form-data" class="d-flex gap-2 align-items-center flex-wrap">
+            <?= csrfField() ?>
+            <input type="file" name="brand_video" class="form-control" accept=".mp4,.webm,.mov" style="max-width:280px">
+            <button type="submit" name="save_brand_video" class="btn-admin-primary">
+                <i class="bi bi-upload"></i> <?= $brandVideo ? 'Replace Video' : 'Upload Video' ?>
+            </button>
+        </form>
+        <?php if ($brandVideo): ?>
+        <form method="POST">
+            <?= csrfField() ?>
+            <button type="submit" name="remove_brand_video" class="btn-admin-secondary"
+                data-confirm="Remove the brand video from the homepage?">
+                <i class="bi bi-trash"></i> Remove
+            </button>
+        </form>
+        <?php endif; ?>
+    </div>
+    <p style="font-size:0.75rem;color:var(--text-muted);margin-top:0.75rem">Accepted: MP4, WebM, MOV. Recommended: 1080×1080 square for desktop.</p>
+</div>
 
 <div class="page-header"><h2>Media Library</h2></div>
 

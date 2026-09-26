@@ -214,4 +214,5 @@ INSERT INTO `settings` (`setting_key`, `setting_value`) VALUES
 ('smtp_password',         ''),
 ('smtp_encryption',       'tls'),
 ('smtp_from_name',        'Haile Estate'),
-('smtp_from_email',       '');
+('smtp_from_email',       ''),
+('brand_video',           '');

@@ -1,2 +1,4 @@
 .env
 error_log
+# Large video files
+*.mp4
