@@ -2,24 +2,25 @@
 require_once __DIR__ . '/includes/auth.php';
 $pageTitle = 'Media Library';
 
-// Brand video upload/remove
+// Brand video upload/remove (slots 1–4)
+$_brandVideoKeys = ['brand_video','brand_video_2','brand_video_3','brand_video_4'];
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_brand_video'])) {
     verifyCsrf();
+    $slot = in_array($_POST['slot'] ?? '', $_brandVideoKeys) ? $_POST['slot'] : 'brand_video';
     if (!empty($_FILES['brand_video']['name'])) {
-        $ext  = strtolower(pathinfo($_FILES['brand_video']['name'], PATHINFO_EXTENSION));
+        $ext     = strtolower(pathinfo($_FILES['brand_video']['name'], PATHINFO_EXTENSION));
         $allowed = ['mp4','webm','mov'];
         if (in_array($ext, $allowed) && $_FILES['brand_video']['error'] === UPLOAD_ERR_OK) {
             $dir = __DIR__ . '/../uploads/brand/';
             if (!is_dir($dir)) mkdir($dir, 0755, true);
-            // remove old
-            $old = getSetting('brand_video');
+            $old = getSetting($slot);
             if ($old) { $abs = __DIR__ . '/../' . ltrim($old,'/'); if (file_exists($abs)) unlink($abs); }
             $filename = 'brand_' . bin2hex(random_bytes(4)) . '.' . $ext;
             move_uploaded_file($_FILES['brand_video']['tmp_name'], $dir . $filename);
             $path = 'uploads/brand/' . $filename;
             $st = db()->prepare('INSERT INTO settings (setting_key,setting_value) VALUES (?,?) ON DUPLICATE KEY UPDATE setting_value=?');
-            $st->execute(['brand_video', $path, $path]);
-            flash('success', 'Brand video updated.');
+            $st->execute([$slot, $path, $path]);
+            flash('success', 'Video updated.');
         } else {
             flash('error', 'Invalid file. Use MP4, WebM or MOV.');
         }
@@ -28,10 +29,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_brand_video'])) 
 }
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove_brand_video'])) {
     verifyCsrf();
-    $old = getSetting('brand_video');
+    $slot = in_array($_POST['slot'] ?? '', $_brandVideoKeys) ? $_POST['slot'] : 'brand_video';
+    $old = getSetting($slot);
     if ($old) { $abs = __DIR__ . '/../' . ltrim($old,'/'); if (file_exists($abs)) unlink($abs); }
-    db()->prepare('DELETE FROM settings WHERE setting_key = ?')->execute(['brand_video']);
-    flash('success', 'Brand video removed.');
+    db()->prepare('UPDATE settings SET setting_value="" WHERE setting_key=?')->execute([$slot]);
+    flash('success', 'Video removed.');
     header('Location: ' . BASE_URL . '/admin/media'); exit;
 }
 
@@ -81,43 +83,60 @@ include __DIR__ . '/includes/header.php';
 
 <?= renderFlash() ?>
 
-<!-- Brand Video Card -->
-<?php $brandVideo = getSetting('brand_video'); ?>
+<!-- Brand Video Cards (4 slots) -->
+<?php
+$_brandLabels = ['Video 1','Video 2','Video 3','Video 4'];
+$_brandSlots  = ['brand_video','brand_video_2','brand_video_3','brand_video_4'];
+?>
 <div class="admin-card mb-4">
     <div class="admin-card-header">
-        <span class="admin-card-title"><i class="bi bi-camera-video me-2"></i>Homepage Brand Video</span>
-        <?php if ($brandVideo): ?>
-        <a href="<?= e(assetUrl($brandVideo)) ?>" target="_blank" class="btn-admin-secondary" style="padding:0.35rem 0.85rem;font-size:0.8rem;"><i class="bi bi-eye"></i> Preview</a>
-        <?php endif; ?>
+        <span class="admin-card-title"><i class="bi bi-camera-video me-2"></i>Homepage Brand Videos (4 slots)</span>
     </div>
-    <?php if ($brandVideo): ?>
-    <div class="d-flex align-items-center gap-3 mb-3">
-        <video src="<?= e(assetUrl($brandVideo)) ?>" style="height:80px;border-radius:4px;background:#000" muted playsinline></video>
-        <div>
-            <div style="font-size:0.82rem;font-weight:500"><?= e(basename($brandVideo)) ?></div>
-            <div style="font-size:0.75rem;color:var(--text-muted)">Currently active on homepage</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.25rem;margin-top:0.75rem">
+    <?php foreach ($_brandSlots as $i => $slot):
+        $bv = getSetting($slot); ?>
+    <div style="border:1px solid var(--border);border-radius:8px;padding:1.25rem;display:flex;flex-direction:column;gap:0.75rem">
+
+        <div style="font-size:0.72rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em">
+            <?= $_brandLabels[$i] ?>
+            <?php if ($bv): ?><span style="color:#22c55e;margin-left:0.5rem">&#10003; Active</span><?php endif; ?>
         </div>
-    </div>
-    <?php endif; ?>
-    <div class="d-flex gap-2 flex-wrap">
-        <form method="POST" enctype="multipart/form-data" class="d-flex gap-2 align-items-center flex-wrap">
+
+        <?php if ($bv): ?>
+        <div style="display:flex;align-items:center;gap:0.75rem">
+            <video src="<?= e(assetUrl($bv)) ?>" style="height:60px;width:80px;object-fit:cover;border-radius:4px;background:#000;flex-shrink:0" muted playsinline></video>
+            <span style="font-size:0.75rem;color:var(--text-muted);word-break:break-all"><?= e(basename($bv)) ?></span>
+        </div>
+        <?php else: ?>
+        <div style="height:60px;border-radius:4px;background:var(--surface2);display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:0.78rem">
+            No video uploaded
+        </div>
+        <?php endif; ?>
+
+        <form method="POST" enctype="multipart/form-data" style="display:flex;flex-direction:column;gap:0.5rem">
             <?= csrfField() ?>
-            <input type="file" name="brand_video" class="form-control" accept=".mp4,.webm,.mov" style="max-width:280px">
-            <button type="submit" name="save_brand_video" class="btn-admin-primary">
-                <i class="bi bi-upload"></i> <?= $brandVideo ? 'Replace Video' : 'Upload Video' ?>
+            <input type="hidden" name="slot" value="<?= $slot ?>">
+            <input type="file" name="brand_video" class="form-control" accept=".mp4,.webm,.mov" style="font-size:0.8rem">
+            <button type="submit" name="save_brand_video" class="btn-admin-primary" style="width:100%;justify-content:center">
+                <i class="bi bi-upload"></i> <?= $bv ? 'Replace Video' : 'Upload Video' ?>
             </button>
         </form>
-        <?php if ($brandVideo): ?>
+
+        <?php if ($bv): ?>
         <form method="POST">
             <?= csrfField() ?>
-            <button type="submit" name="remove_brand_video" class="btn-admin-secondary"
-                data-confirm="Remove the brand video from the homepage?">
+            <input type="hidden" name="slot" value="<?= $slot ?>">
+            <button type="submit" name="remove_brand_video" class="btn-admin-secondary" style="width:100%;justify-content:center"
+                data-confirm="Remove this video?">
                 <i class="bi bi-trash"></i> Remove
             </button>
         </form>
         <?php endif; ?>
+
     </div>
-    <p style="font-size:0.75rem;color:var(--text-muted);margin-top:0.75rem">Accepted: MP4, WebM, MOV. Recommended: 1080×1080 square for desktop.</p>
+    <?php endforeach; ?>
+    </div>
+    <p style="font-size:0.75rem;color:var(--text-muted);margin-top:1rem">Accepted: MP4, WebM, MOV. Videos with no file uploaded are hidden on the homepage.</p>
 </div>
 
 <div class="page-header"><h2>Media Library</h2></div>

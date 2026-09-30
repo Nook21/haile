@@ -191,16 +191,24 @@ include __DIR__ . '/includes/header.php';
     </div>
 </section>
 
-<!-- BRAND VIDEO -->
-<?php $brandVideoPath = getSetting('brand_video'); ?>
-<?php if ($brandVideoPath): ?>
+<!-- BRAND VIDEOS -->
+<?php
+$_brandVideos = array_filter([
+    getSetting('brand_video'),
+    getSetting('brand_video_2'),
+    getSetting('brand_video_3'),
+    getSetting('brand_video_4'),
+]);
+?>
+<?php if ($_brandVideos): ?>
 <section class="brand-video-section" id="brandVideo">
-    <div class="brand-video-inner">
-        <div class="brand-video-wrap" id="brandVideoWrap">
+    <div class="brand-videos-grid">
+        <?php foreach (array_values($_brandVideos) as $_bvi => $_bvp): ?>
+        <div class="brand-video-wrap" id="brandVideoWrap<?= $_bvi ?>">
             <video
-                id="brandVid"
+                id="brandVid<?= $_bvi ?>"
                 class="brand-vid"
-                src="<?= e(assetUrl($brandVideoPath)) ?>"
+                src="<?= e(assetUrl($_bvp)) ?>"
                 loop
                 muted
                 playsinline
@@ -208,27 +216,20 @@ include __DIR__ . '/includes/header.php';
                 controlsList="nodownload nofullscreen"
                 disablePictureInPicture
             ></video>
-            <div class="brand-vid-overlay" id="brandVidOverlay">
-                <div class="brand-vid-play-icon" id="brandVidPlayIcon">
-                    <i class="bi bi-play-fill"></i>
-                </div>
-                <p class="brand-vid-label">Move cursor to unmute</p>
+            <div class="brand-vid-overlay" id="brandVidOverlay<?= $_bvi ?>">
+                <div class="brand-vid-play-icon"><i class="bi bi-play-fill"></i></div>
             </div>
             <div class="brand-vid-controls">
-                <button class="brand-vid-btn" id="brandVidSoundBtn" aria-label="Toggle sound">
-                    <i class="bi bi-volume-mute-fill" id="brandVidSoundIco"></i>
+                <button class="brand-vid-btn brand-vid-sound-btn" aria-label="Toggle sound">
+                    <i class="bi bi-volume-mute-fill brand-vid-sound-ico"></i>
                 </button>
-                <button class="brand-vid-btn" id="brandVidFsBtn" aria-label="Fullscreen">
-                    <i class="bi bi-fullscreen" id="brandVidFsIco"></i>
+                <button class="brand-vid-btn brand-vid-fs-btn" aria-label="Fullscreen">
+                    <i class="bi bi-fullscreen brand-vid-fs-ico"></i>
                 </button>
             </div>
-            <div class="brand-vid-progress" id="brandVidProgress"><div class="brand-vid-bar" id="brandVidBar"></div></div>
+            <div class="brand-vid-progress"><div class="brand-vid-bar"></div></div>
         </div>
-        <div class="brand-video-meta">
-            <p class="brand-video-eyebrow">Haile Estate</p>
-            <h2 class="brand-video-title">Experience the <em>difference.</em></h2>
-            <p class="brand-video-sub">A glimpse into the world of Haile Real Estate &mdash; where every property tells a story.</p>
-        </div>
+        <?php endforeach; ?>
     </div>
 </section>
 <?php endif; ?>

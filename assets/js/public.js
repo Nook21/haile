@@ -179,161 +179,124 @@
     }, 600);
   };
 
-  /* ── Brand Video ─────────────────────────────────────────── */
+  /* ── Brand Videos (4-grid) ─────────────────────────────── */
   (function () {
-    const wrap    = document.getElementById('brandVideoWrap');
-    const vid     = document.getElementById('brandVid');
-    const overlay = document.getElementById('brandVidOverlay');
-    const soundBtn = document.getElementById('brandVidSoundBtn');
-    const soundIco = document.getElementById('brandVidSoundIco');
-    const fsBtn   = document.getElementById('brandVidFsBtn');
-    const fsIco   = document.getElementById('brandVidFsIco');
-    const bar     = document.getElementById('brandVidBar');
-    const progress = document.getElementById('brandVidProgress');
-    if (!wrap || !vid) return;
+    var wraps = document.querySelectorAll('.brand-video-wrap');
+    if (!wraps.length) return;
 
-    let playing = false;
-    let watched = false;
+    wraps.forEach(function (wrap, index) {
+      var vid      = wrap.querySelector('.brand-vid');
+      var soundBtn = wrap.querySelector('.brand-vid-sound-btn');
+      var soundIco = wrap.querySelector('.brand-vid-sound-ico');
+      var fsBtn    = wrap.querySelector('.brand-vid-fs-btn');
+      var fsIco    = wrap.querySelector('.brand-vid-fs-ico');
+      var bar      = wrap.querySelector('.brand-vid-bar');
+      var progress = wrap.querySelector('.brand-vid-progress');
+      if (!vid) return;
 
-    // Start: unmuted, with sound
-    function startPlay() {
-      if (playing) return;
-      // Always start muted (browser autoplay policy requires it on desktop)
-      vid.muted = true;
-      vid.load();
-      vid.play().then(() => {
-        playing = true;
-        wrap.classList.add('playing');
-        // On mobile (touch device) try to unmute immediately
-        if (window.matchMedia('(hover:none)').matches) {
-          vid.muted = false;
-        } else {
-          // Desktop: show click-to-unmute prompt
-          wrap.classList.add('needs-unmute');
-        }
-        updateSoundUI();
-      }).catch(() => {});
-    }
+      // Only the first video auto-unmutes on hover; others stay muted until manually toggled
+      var isFirst = (index === 0);
+      var playing = false;
 
-    function pausePlay() {
-      if (!playing) return;
-      vid.pause();
-      playing = false;
-      wrap.classList.remove('playing');
-    }
-
-    function updateSoundUI() {
-      soundIco.className = vid.muted ? 'bi bi-volume-mute-fill' : 'bi bi-volume-up-fill';
-      soundBtn.classList.toggle('active', !vid.muted);
-    }
-
-    // Collapse after video ends (one full loop)
-    vid.addEventListener('ended', () => {
-      if (watched) return;
-      watched = true;
-      vid.loop = false;
-    });
-    vid.addEventListener('timeupdate', () => {
-      if (!vid.duration) return;
-      bar.style.width = ((vid.currentTime / vid.duration) * 100) + '%';
-      // collapse when near end on non-loop
-      if (watched && vid.currentTime >= vid.duration - 0.1) {
-        wrap.classList.add('collapsed');
-        pausePlay();
+      function startPlay() {
+        if (playing) return;
+        vid.muted = true;
+        vid.load();
+        vid.play().then(function () {
+          playing = true;
+          wrap.classList.add('playing');
+          updateSoundUI();
+        }).catch(function () {});
       }
-    });
 
-    // IntersectionObserver — autoplay when 50% visible, pause when out
-    const io = new IntersectionObserver(entries => {
-      entries.forEach(e => {
-        if (e.isIntersecting && e.intersectionRatio >= 0.5) {
-          if (!watched) startPlay();
-        } else {
-          pausePlay();
-        }
+      function pausePlay() {
+        if (!playing) return;
+        vid.pause();
+        playing = false;
+        wrap.classList.remove('playing');
+      }
+
+      function updateSoundUI() {
+        if (!soundIco) return;
+        soundIco.className = vid.muted ? 'bi bi-volume-mute-fill brand-vid-sound-ico' : 'bi bi-volume-up-fill brand-vid-sound-ico';
+        if (soundBtn) soundBtn.classList.toggle('active', !vid.muted);
+      }
+
+      vid.addEventListener('timeupdate', function () {
+        if (!vid.duration || !bar) return;
+        bar.style.width = ((vid.currentTime / vid.duration) * 100) + '%';
       });
-    }, { threshold: [0, 0.5] });
-    io.observe(wrap);
 
-    // Desktop: unmute on first mousemove over the wrap
-    wrap.addEventListener('mousemove', function unmuteOnMove() {
-      if (playing && vid.muted) {
-        vid.muted = false;
-        wrap.classList.remove('needs-unmute');
-        updateSoundUI();
+      // IntersectionObserver — autoplay when 50% visible
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting && e.intersectionRatio >= 0.5) startPlay();
+          else pausePlay();
+        });
+      }, { threshold: [0, 0.5] });
+      io.observe(wrap);
+
+      // First video only: auto-unmute on first mousemove over it
+      if (isFirst) {
+        wrap.addEventListener('mousemove', function unmuteOnMove() {
+          if (playing && vid.muted) {
+            vid.muted = false;
+            updateSoundUI();
+          }
+          wrap.removeEventListener('mousemove', unmuteOnMove);
+        });
       }
-      wrap.removeEventListener('mousemove', unmuteOnMove);
-    });
 
-    // Click collapsed wrap to replay
-    wrap.addEventListener('click', () => {
-      if (wrap.classList.contains('collapsed')) {
-        wrap.classList.remove('collapsed');
-        watched = false;
-        vid.loop = true;
-        vid.currentTime = 0;
-        bar.style.width = '0%';
-        startPlay();
-        return;
+      // Sound toggle button — works on all videos manually
+      if (soundBtn) {
+        soundBtn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          vid.muted = !vid.muted;
+          updateSoundUI();
+        });
       }
-      // Desktop click-to-unmute
-      if (wrap.classList.contains('needs-unmute')) {
-        vid.muted = false;
-        wrap.classList.remove('needs-unmute');
-        updateSoundUI();
+
+      // Seekbar
+      if (progress) {
+        var seeking = false;
+        function seek(e) {
+          if (!vid.duration) return;
+          var rect = progress.getBoundingClientRect();
+          var pct  = Math.min(Math.max((e.clientX - rect.left) / rect.width, 0), 1);
+          vid.currentTime = pct * vid.duration;
+          if (bar) bar.style.width = (pct * 100) + '%';
+          if (!playing) startPlay();
+        }
+        progress.addEventListener('mousedown',  function (e) { seeking = true; seek(e); e.stopPropagation(); });
+        progress.addEventListener('touchstart', function (e) { seeking = true; seek(e.touches[0]); e.stopPropagation(); }, { passive: true });
+        window.addEventListener('mousemove', function (e) { if (seeking) seek(e); });
+        window.addEventListener('touchmove', function (e) { if (seeking) seek(e.touches[0]); }, { passive: true });
+        window.addEventListener('mouseup',   function () { seeking = false; });
+        window.addEventListener('touchend',  function () { seeking = false; });
       }
-    });
 
-    // Sound toggle
-    soundBtn.addEventListener('click', e => {
-      e.stopPropagation();
-      vid.muted = !vid.muted;
-      wrap.classList.remove('needs-unmute');
-      updateSoundUI();
-    });
-
-    // Seekbar — click or drag to jump
-    function seek(e) {
-      if (!vid.duration) return;
-      const rect = progress.getBoundingClientRect();
-      const pct  = Math.min(Math.max((e.clientX - rect.left) / rect.width, 0), 1);
-      vid.currentTime = pct * vid.duration;
-      bar.style.width = (pct * 100) + '%';
-      // if video had finished, reopen and resume
-      if (wrap.classList.contains('collapsed')) {
-        wrap.classList.remove('collapsed');
-        watched = false;
-        vid.loop = true;
+      // Fullscreen
+      if (fsBtn) {
+        fsBtn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          if (!document.fullscreenElement) {
+            (wrap.requestFullscreen || wrap.webkitRequestFullscreen || wrap.mozRequestFullScreen).call(wrap);
+          } else {
+            (document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen).call(document);
+          }
+        });
+        document.addEventListener('fullscreenchange', function () {
+          var inFs = !!document.fullscreenElement;
+          if (fsIco) fsIco.className = inFs ? 'bi bi-fullscreen-exit brand-vid-fs-ico' : 'bi bi-fullscreen brand-vid-fs-ico';
+          wrap.classList.toggle('in-fullscreen', inFs);
+        });
       }
-      if (!playing) startPlay();
-    }
-    let seeking = false;
-    progress.addEventListener('mousedown',  e => { seeking = true;  seek(e); e.stopPropagation(); });
-    progress.addEventListener('touchstart', e => { seeking = true;  seek(e.touches[0]); e.stopPropagation(); }, { passive: true });
-    window.addEventListener('mousemove',  e => { if (seeking) seek(e); });
-    window.addEventListener('touchmove',  e => { if (seeking) seek(e.touches[0]); }, { passive: true });
-    window.addEventListener('mouseup',    () => { seeking = false; });
-    window.addEventListener('touchend',   () => { seeking = false; });
 
-    // Fullscreen
-    fsBtn.addEventListener('click', e => {
-      e.stopPropagation();
-      if (!document.fullscreenElement) {
-        (wrap.requestFullscreen || wrap.webkitRequestFullscreen || wrap.mozRequestFullScreen).call(wrap);
-      } else {
-        (document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen).call(document);
-      }
-    });
-    document.addEventListener('fullscreenchange', () => {
-      const inFs = !!document.fullscreenElement;
-      fsIco.className = inFs ? 'bi bi-fullscreen-exit' : 'bi bi-fullscreen';
-      wrap.classList.toggle('in-fullscreen', inFs);
-    });
-
-    // Pause when tab hidden
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) pausePlay();
-      else if (!watched) startPlay();
+      // Pause when tab hidden
+      document.addEventListener('visibilitychange', function () {
+        if (document.hidden) pausePlay();
+        else startPlay();
+      });
     });
   })();
 
